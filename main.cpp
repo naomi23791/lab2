@@ -5,17 +5,15 @@
 #include <unordered_map>
 #include <vector>
 #include <functional>
+#include <algorithm>
 #include "Pipe.h"
 #include "KC.h"
+#include "RedirectWrapper.h"
+#include "Logger.h"
 using namespace std;
 
-// --- Logging ---
-void logAction(const std::string& action) {
-    std::ofstream log("user_actions.log", std::ios::app);
-    if (log.is_open()) {
-        log << action << std::endl;
-    }
-}
+// --- Simple passthrough for legacy calls ---
+static inline void logAction(const std::string& action) { Logger::logAction(action); }
 
 // --- Save/Load --
 
@@ -61,8 +59,8 @@ bool loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KC>& compa
         logAction("Corrupted file (pipes count): " + filename);
         return false;
     }
-    if (nPipes == 0) {
-        cout << "No pipes found in file." << endl;
+    if (nPipes == 0 && nCompanies == 0) {
+        cout << "No pipes and companies found in file." << endl;
     }
     pipes.clear();
     for (size_t i = 0; i < nPipes; ++i) {
@@ -79,15 +77,17 @@ bool loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KC>& compa
             return false;
         }
         pipes[id] = p;
+        // Log each loaded pipe
+        Logger::logAction("LOAD PIPE", p.getId(), p.getName(), p.getLength(), p.getDiameter(), p.isRepair());
     }
     if (!(file >> nCompanies)) {
         cout << "File corrupted or invalid format (companies count)." << endl;
         logAction("Corrupted file (companies count): " + filename);
         return false;
     }
-    if (nCompanies == 0) {
-        cout << "No companies found in file." << endl;
-    }
+    // if (nCompanies == 0) {
+    //     cout << "No companies found in file." << endl;
+    // }
     companies.clear();
     for (size_t i = 0; i < nCompanies; ++i) {
         KC c;
@@ -103,15 +103,20 @@ bool loadFromFile(unordered_map<int, Pipe>& pipes, unordered_map<int, KC>& compa
             return false;
         }
         companies[id] = c;
+        // Log each loaded company
+        Logger::logAction("LOAD COMPANY", c.getId(), c.getName(), c.getWorkshop(), c.getWorkshopInOperation(), c.getClasses());
     }
     if (pipes.empty() && companies.empty()) {
         cout << "Nothing loaded: file contains no pipes or companies." << endl;
         logAction("Load aborted: nothing in file.");
         return false;
     }
+    
     cout << "Data loaded from file successfully." << endl;
     logAction("Loaded data from file: " + filename);
     return true;
+    
+    
 }
 
 // --- Batch Edit ---
@@ -134,6 +139,7 @@ void batchEditPipes(unordered_map<int, Pipe>& pipes, const vector<int>& ids) {
         int id = toEdit[i];
         if (pipes.count(id)) {
             pipes[id].editRepair();
+            Logger::logAction("EDIT PIPE", id, pipes[id].getName(), pipes[id].getLength(), pipes[id].getDiameter(), pipes[id].isRepair());
         }
     }
     cout << "Batch edit complete.\n";
@@ -239,20 +245,33 @@ void managePipes(unordered_map<int, Pipe>& pipes) {
                         cin >> act;
                         if (cin.fail()) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); continue; }
                         switch (act) {
-                            case 1:
-                                for (size_t i = 0; i < lastSearch.size(); ++i) pipes[lastSearch[i]].display();
+                            case 1: {
+                                size_t shown = 0;
+                                for (size_t i = 0; i < lastSearch.size(); ++i) {
+                                    int idShow = lastSearch[i];
+                                    unordered_map<int, Pipe>::const_iterator itP = pipes.find(idShow);
+                                    if (itP != pipes.end()) {
+                                        itP->second.display();
+                                        shown++;
+                                    }
+                                }
+                                if (shown == 0) cout << "No objects found.\n";
                                 break;
+                            }
                             case 2: {
                                 int id;
                                 cout << "Enter ID to edit: "; cin >> id;
-                                if (pipes.count(id)) pipes[id].editRepair();
+                                if (pipes.count(id)) {
+                                    pipes[id].editRepair();
+                                    Logger::logAction("EDIT PIPE", id, pipes[id].getName(), pipes[id].getLength(), pipes[id].getDiameter(), pipes[id].isRepair());
+                                }
                                 else cout << "Not found.\n";
                                 break;
                             }
                             case 3: {
                                 int id;
                                 cout << "Enter ID to delete: "; cin >> id;
-                                if (pipes.erase(id)) cout << "Deleted.\n";
+                                if (pipes.count(id)) { Logger::logAction("DELETE PIPE", id, pipes[id].getName(), pipes[id].getLength(), pipes[id].getDiameter(), pipes[id].isRepair()); pipes.erase(id); cout << "Deleted.\n"; }
                                 else cout << "Not found.\n";
                                 break;
                             }
@@ -320,20 +339,31 @@ void manageCompanies(unordered_map<int, KC>& companies) {
                         cin >> act;
                         if (cin.fail()) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); continue; }
                         switch (act) {
-                            case 1:
-                                for (size_t i = 0; i < lastSearch.size(); ++i) companies[lastSearch[i]].display();
+                            case 1: {
+                                size_t shown = 0;
+                                for (size_t i = 0; i < lastSearch.size(); ++i) {
+                                    int idShow = lastSearch[i];
+                                    unordered_map<int, KC>::const_iterator itC = companies.find(idShow);
+                                    if (itC != companies.end()) {
+                                        itC->second.display();
+                                        shown++;
+                                    }
+                                }
+                                if (shown == 0) cout << "No objects found.\n";
                                 break;
+                            }
                             case 2: {
                                 int id;
                                 cout << "Enter ID to edit: "; cin >> id;
-                                if (companies.count(id)) companies[id].editWorkshops();
+                                if (companies.count(id)) { companies[id].editWorkshops();
+                                    Logger::logAction("EDIT COMPANY", id, companies[id].getName(), companies[id].getWorkshop(), companies[id].getWorkshopInOperation(), companies[id].getClasses()); }
                                 else cout << "Not found.\n";
                                 break;
                             }
                             case 3: {
                                 int id;
                                 cout << "Enter ID to delete: "; cin >> id;
-                                if (companies.erase(id)) cout << "Deleted.\n";
+                                if (companies.count(id)) { Logger::logAction("DELETE COMPANY", id, companies[id].getName(), companies[id].getWorkshop(), companies[id].getWorkshopInOperation(), companies[id].getClasses()); companies.erase(id); cout << "Deleted.\n"; }
                                 else cout << "Not found.\n";
                                 break;
                             }
@@ -359,6 +389,7 @@ void addPipe(unordered_map<int, Pipe>& pipes, int& nextPipeId) {
     p.input(nextPipeId);
     pipes[nextPipeId] = p;
     cout << "Pipe added with ID: " << nextPipeId << endl;
+    Logger::logPipeSimple(p.getName(), p.getLength(), p.getDiameter(), p.isRepair());
     nextPipeId++;
 }
 
@@ -367,6 +398,7 @@ void addCompany(unordered_map<int, KC>& companies, int& nextCompanyId) {
     c.input(nextCompanyId);
     companies[nextCompanyId] = c;
     cout << "Company added with ID: " << nextCompanyId << endl;
+    Logger::logCompanySimple(c.getName(), c.getWorkshop(), c.getWorkshopInOperation(), c.getClasses());
     nextCompanyId++;
 }
 

@@ -1,11 +1,340 @@
+Saved data to file: data.txt
+Save aborted: nothing to save.
+Exited program
 Added pipe
 Exited program
+Exited program
+Exited program
+Loaded data from file: data.txt
+Added company
+Loaded data from file: data.txt
+Saved data to file: data.txt
+Saved data to file: data.txt
+Added company
 Saved data to file: data.txt
 Loaded data from file: data.txt
+Failed to open file for loading: data.txt
+Saved data to file: data.txt
+Invalid/duplicate pipe ID: 0
 Exited program
+Added pipe
+Save successful: 1 pipes, 0 companies to data.txt
+Load failed: corrupted pipe data in data.txt
+Load failed: corrupted pipe data in data.txt
+Save successful: 1 pipes, 0 companies to data.txt
+Exited program
+Load failed: corrupted pipe data - data.txt
+Added pipe
+Added pipe
+Save successful: 1 pipes, 0 companies to data.txt
+Added pipe
+Load failed: invalid format - data.txt
+Save cancelled: no data in memory
+Exited program
+Failed to open file for loading: data.txt
 Save aborted: nothing to save.
-Load aborted: nothing in file.
 Added pipe
-Added company
+Save aborted: nothing to save.
 Added pipe
+Saved data to file: data.txt
 Added company
+Saved data to file: data.txt
+Loaded data from file: data.txt
+Loaded data from file: data.txt
+Set filename: datas.txt
+Saved data to file: datas.txt
+Saved data to file: datas.txt
+Saved data to file: datas.txt
+Loaded data from file: datas.txt
+Saved data to file: datas.txt
+Save aborted: nothing to save.
+Save aborted: nothing to save.
+Exited program
+Exited program
+Added pipe
+Added pipe
+Added pipe
+Added pipe
+Saved data to file: data.txt
+Set filename: data2.txt
+Saved data to file: data2.txt
+Exited program
+Set filename: data2.txt
+Loaded data from file: data2.txt
+Added pipe
+[2025-10-08 13:34:23] Program started
+
+=== ADD_PIPE ===
+Time: 2025-10-08 13:34:28
+Enter the informations of pipe in this order:
+name, length, diameter, repair (0 for no, 1 for yes)
+Name: Length: [2025-10-08 13:35:04] Program started
+
+=== ADD_PIPE ===
+Time: 2025-10-08 13:35:07
+Enter the informations of pipe in this order:
+name, length, diameter, repair (0 for no, 1 for yes)
+Name: Length: Diameter: [2025-10-08 13:39:19] Program started
+
+=== ADD_PIPE ===
+Time: 2025-10-08 13:39:53
+Enter the informations of pipe in this order:
+name, length, diameter, repair (0 for no, 1 for yes)
+Name: Length: Diameter: Repair (0 for no, 1 for yes): Pipe added with ID: 1
+=== End ADD_PIPE ===
+
+
+=== ADD_PIPE ===
+Time: 2025-10-08 13:40:32
+Enter the informations of pipe in this order:
+name, length, diameter, repair (0 for no, 1 for yes)
+Name: Added pipe
+Exited program
+[2025-10-08 13:47:33] Program started
+
+=== ADD_PIPE ===
+Time: 2025-10-08 13:47:39
+Enter the informations of pipe in this order:
+name, length, diameter, repair (0 for no, 1 for yes)
+Name: [2025-10-08 13:55:06] Program started
+[2025-10-08 13:55:16] START: Add Pipe
+[2025-10-08 13:55:26] COMPLETED: Add Pipe
+[2025-10-09 09:18:35] Program started
+[2025-10-09 09:18:39] START: Add Pipe
+[2025-10-09 09:18:52] COMPLETED: Add Pipe
+[2025-10-09 09:19:16] START: Add Company
+[2025-10-09 09:19:32] COMPLETED: Add Company
+[2025-10-09 09:19:48] START: Save to File
+[2025-10-09 09:19:48] Saved data to: data.txt (Pipes: 1, Companies: 1)
+[2025-10-09 09:19:48] COMPLETED: Save to File
+[2025-10-09 09:20:04] START: Pipe Management
+[2025-10-09 09:20:28] COMPLETED: Pipe Management
+[2025-10-09 09:20:30] START: Company Management
+[2025-10-09 09:21:03] COMPLETED: Company Management
+[2025-10-09 09:21:06] START: Save to File
+[2025-10-09 09:21:06] Save aborted: nothing to save
+[2025-10-09 09:21:06] COMPLETED: Save to File
+[2025-10-09 09:21:34] START: Save to File
+[2025-10-09 09:21:34] Save aborted: nothing to save
+[2025-10-09 09:21:34] COMPLETED: Save to File
+[2025-10-09 09:41:10] Program exited normally
+1
+pipe1
+23
+45
+yes
+[2025-10-09 10:37:23] Added pipe
+1
+compa1
+23
+12
+a
+[2025-10-09 10:40:54] Added company
+2
+pipe2
+23
+45
+yes
+[2025-10-09 10:41:33] Added pipe
+3
+pipe1
+23
+45
+yes
+[2025-10-09 10:43:53] Saved data to file: data.txt
+[2025-10-09 10:52:29] Exited program
+1
+pipe1
+23
+45
+no
+[2025-10-09 10:54:44] Added pipe
+1
+compa1
+45
+23
+b
+[2025-10-09 10:55:11] Added company
+2
+pipe1
+23
+45
+no
+DELETE PIPE
+[2025-10-09 10:59:25] Exited program
+action1
+pipe1
+23
+45
+yes
+[2025-10-09 11:00:54] Added pipe
+action1
+bvs
+23
+2
+a
+[2025-10-09 11:02:46] Added company
+[2025-10-09 11:02:49] Exited program
+action1for the pipes
+pipe1
+23
+23
+yes
+[2025-10-09 11:03:35] Added pipe
+action2for the pipes
+pipe2
+56
+45
+no
+[2025-10-09 11:03:54] Added pipe
+action1for the companies
+compa1
+23
+2
+a
+[2025-10-09 11:04:13] Added company
+[2025-10-09 11:04:27] Saved data to file: data.txt
+action3for the pipe
+pipe2
+56
+45
+no
+LOAD PIPE
+action4for the pipe
+pipe1
+23
+23
+yes
+LOAD PIPE
+action2for the companies
+compa1
+23
+2
+a
+LOAD COMPANY
+[2025-10-09 11:05:08] Loaded data from file: data.txt
+action5for the pipe
+pipe1
+23
+23
+yes
+DELETE PIPE
+action6for the pipes
+pipe2
+23
+34
+yes
+[2025-10-09 11:07:20] Added pipe
+[2025-10-09 11:08:39] Saved data to file: data.txt
+[2025-10-09 11:09:00] Exited program
+action1for the pipes
+pipe1
+34
+24
+yes
+[2025-10-09 11:12:38] Added pipe
+action2for the pipes
+pipe2
+23
+13
+no
+[2025-10-09 11:12:55] Added pipe
+[2025-10-09 11:13:09] DELETE PIPE
+[2025-10-09 11:13:44] Saved data to file: data.txt
+[2025-10-09 11:17:07] Exited program
+action1for the pipes
+pipe1
+23
+56
+yes
+[2025-10-09 11:18:50] Added pipe
+action2for the pipes
+pipe2
+67
+48
+yes
+[2025-10-09 11:19:00] Added pipe
+action1for the companies
+companie1
+45
+5
+a
+[2025-10-09 11:19:15] Added company
+[2025-10-09 11:19:50] DELETE PIPE
+action3for the pipe
+pipe2
+67
+48
+yes
+EDIT PIPE
+action4for the pipes
+pipe3
+24
+56
+yes
+[2025-10-09 11:21:18] Added pipe
+[2025-10-09 11:24:34] DELETE COMPANY
+[2025-10-09 11:31:00] DELETE PIPE
+[2025-10-09 11:31:13] Exited program
+action1for the pipes
+pipe1
+34
+25
+yes
+[2025-10-09 11:31:35] Added pipe
+action1for the companies
+comp1
+23
+2
+a
+[2025-10-09 11:31:50] Added company
+action2for the pipes
+pipe2
+45
+65
+no
+[2025-10-09 11:32:03] Added pipe
+action3for the pipe
+pipe1
+34
+25
+no
+EDIT PIPE
+action4for the pipe
+pipe1
+34
+25
+no
+DELETE PIPE
+action5for the pipes
+pipe3
+67
+58
+yes
+[2025-10-09 11:35:26] Added pipe
+action6for the pipe
+pipe3
+67
+58
+no
+EDIT PIPE
+[2025-10-09 11:38:03] Exited program
+action: 1 for the pipes
+pipe1
+23
+45
+yes
+[2025-10-09 11:43:21] Added pipe
+action: 1 for the companies
+copa1
+23
+1
+a
+[2025-10-09 11:43:34] Added company
+action: 2 for the companies
+copa2
+34
+6
+b
+[2025-10-09 11:43:46] Added company
+[2025-10-09 11:44:33] Exited program
