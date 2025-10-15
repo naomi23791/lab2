@@ -338,3 +338,49 @@ copa2
 b
 [2025-10-09 11:43:46] Added company
 [2025-10-09 11:44:33] Exited program
+action: 1 for the pipes
+pipe1
+34
+45
+yes
+[2025-10-09 15:20:57] Added pipe
+[2025-10-09 15:21:15] Exited program
+action: 1 for the pipes
+pipe1
+23
+34
+yes
+[2025-10-14 22:13:39] Added pipe
+action: 1 for the companies
+pipe2
+23
+12
+a
+[2025-10-14 22:13:54] Added company
+action: 2 for the pipe
+pipe1
+23
+34
+yes
+DELETE PIPE
+action: 3 for the pipes
+pipe2
+23
+45
+yes
+[2025-10-14 22:15:09] Added pipe
+[2025-10-14 22:15:31] Exited program
+action: 1 for the pipes
+pipe1
+1.2
+200
+yes
+[2025-10-15 12:28:14] Added pipe
+action: 2 for the pipes
+pipe2
+1.2
+300
+yes
+[2025-10-15 12:28:27] Added pipe
+[2025-10-15 12:28:44] Saved data to file: data.txt
+[2025-10-15 12:28:48] Exited program
