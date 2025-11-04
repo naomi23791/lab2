@@ -23,14 +23,14 @@ void KC::input(int newId) {
     while (true) {
         std::cout << "Number of workshops: ";
         if (std::cin >> workshop && workshop > 0) break;
-        std::cout << "Invalid input. Please enter an integer.\n";
+        std::cout << "Invalid input. the Number of workshops must be a positive integer.\n";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     while (true) {
         std::cout << "Number of workshops in operation: ";
         if (std::cin >> workshop_in_operation && workshop_in_operation <= workshop) break;
-        std::cout << "Invalid input. Please enter an integer.\n";
+        std::cout << "Invalid input. Please enter an integer least than " << workshop << ".\n";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
