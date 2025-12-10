@@ -1,6 +1,8 @@
+// KC.h
 #pragma once
 #include <string>
 #include <iostream>
+#include <unordered_map>
 
 class KC {
 private:
@@ -24,3 +26,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const KC& c);
     friend std::istream& operator>>(std::istream& is, KC& c);
 };
+
+// Fonctions de gestion des KC
+// Adds a company to the map and returns the assigned ID
+int addCompany(std::unordered_map<int, KC>& companies);
+void manageCompanies(std::unordered_map<int, KC>& companies);

@@ -1,340 +1,406 @@
 #include "GasNetwork.h"
 #include <iostream>
-#include <fstream>
 #include <unordered_map>
-#include <algorithm>  // Pour std::remove_if et std::remove
+#include <algorithm>
+#include <queue>
+#include <set>
+#include <map>
+#include <functional>
+#include <vector>
+#include <limits>
+#include <cmath>
 
-bool GasNetwork::hasCycle() {
-    std::unordered_map<int, bool> visited;
-    std::unordered_map<int, bool> recursionStack;
-    
-    // Initialize
-    for (const auto& conn : connections) {
-        visited[conn.from_kc] = false;
-        visited[conn.to_kc] = false;
-        recursionStack[conn.from_kc] = false;
-        recursionStack[conn.to_kc] = false;
-    }
-    
-    // Check for cycle starting from each node
-    for (const auto& pair : adjacencyList) {
-        if (!visited[pair.first]) {
-            if (hasCycleUtil(pair.first, visited, recursionStack)) {
-                return true;
-            }
-        }
-    }
+/*======================================================================
+   Constructeur
+======================================================================*/
+GasNetwork::GasNetwork() {}
+
+/*======================================================================
+   BASE HELPERS
+======================================================================*/
+bool GasNetwork::connectionExists(int from, int to) const {
+    auto it = graph.find(from);
+    if (it == graph.end()) return false;
+    for (const Edge& e : it->second)
+        if (e.to == to) return true;
     return false;
 }
 
-bool GasNetwork::hasCycleUtil(int v, std::unordered_map<int, bool>& visited,std::unordered_map<int, bool>& recursionStack) {
-    visited[v] = true;
-    recursionStack[v] = true;
-    
-    // Check all adjacent vertices
-    if (adjacencyList.count(v)) {
-        for (int u : adjacencyList[v]) {
-            // If vertex is not visited and its recursive call returns true
-            if (!visited[u] && hasCycleUtil(u, visited, recursionStack)) {
-                return true;
-            }
-            // If vertex is in recursion stack, we found a cycle
-            else if (recursionStack[u]) {
-                return true;
-            }
-        }
-    }
-    
-    recursionStack[v] = false;
-    return false;
+/*======================================================================
+   REGISTER PIPE – enregistrement dès la création
+======================================================================*/
+void GasNetwork::registerPipe(int pipe_id, const Pipe& pipe) {
+    pipes[pipe_id] = pipe;                     // on garde les infos du tuyau
 }
 
-bool GasNetwork::addConnection(int from_kc, int to_kc, int pipe_id) {
-    // Check prerequisites
-    if (from_kc == to_kc) {
-        std::cout << "Error: Cannot connect a KC to itself!\n";
-        return false;
-    }
+/*======================================================================
+   ADD CONNECTION – initialise capacity/weight, empêche les cycles
+======================================================================*/
+bool GasNetwork::addConnection(int from, int to, int pipe_id) {
+    if (connectionExists(from, to)) return false;          // déjà existante
 
-    if (connectionExists(from_kc, to_kc)) {
-        std::cout << "Error: Connection already exists between these KCs!\n";
+    // le tuyau doit être présent dans le registre de pipes
+    auto pIt = pipes.find(pipe_id);
+    if (pIt == pipes.end()) {
+        std::cerr << "Pipe ID " << pipe_id << " not registered in the network.\n";
         return false;
     }
+    const Pipe& p = pIt->second;
 
-    // Test if adding this connection would create a cycle
-    if (adjacencyList.find(from_kc) == adjacencyList.end()) {
-        adjacencyList[from_kc] = std::vector<int>();
-    }
-    adjacencyList[from_kc].push_back(to_kc);
-    
-    if (hasCycle()) {
-        // Remove the test connection from adjacencyList
-        adjacencyList[from_kc].pop_back();
-        if (adjacencyList[from_kc].empty()) {
-            adjacencyList.erase(from_kc);
-        }
-        std::cout << "Error: Adding this connection would create a cycle!\n";
-        std::cout << "The network must remain acyclic for topological sorting.\n";
+    Edge e;
+    e.to       = to;
+    e.pipe_id  = pipe_id;
+    e.capacity = static_cast<Edge::FlowType>(p.getCapacity());   
+    e.flow     = 0;
+    e.weight   = p.getWeight();                                
+
+    // insertion temporaire → test de cycle
+    graph[from].push_back(e);
+    if (hasCycle()) {                     // crée un cycle → annuler
+        graph[from].pop_back();
         return false;
     }
-    
-    // If no cycle, add the connection permanently
-    connections.push_back({from_kc, to_kc, pipe_id});
     return true;
 }
 
-// bool GasNetwork::hasCycle() {
-//     std::unordered_map<int, int> visited;  // 0=non visité, 1=en cours, 2=terminé
-    
-//     // Initialiser tous les nœuds comme non visités
-//     for (const auto& conn : connections) {
-//         visited[conn.from_kc] = 0;
-//         visited[conn.to_kc] = 0;
-//     }
-    
-//     // Vérifier chaque nœud non visité
-//     for (const auto& pair : adjacencyList) {
-//         if (visited[pair.first] == 0) {
-//             if (dfsCheckCycle(pair.first, visited)) {
-//                 return true;  // Cycle trouvé
-//             }
-//         }
-//     }
-//     return false;
-// }
-bool GasNetwork::dfs(int v, std::unordered_map<int, int>& visited) {
-    visited[v] = 1;  // Marquer comme en cours de visite
-    
-    // Vérifier tous les voisins
-    if (adjacencyList.count(v)) {
-        for (int u : adjacencyList[v]) {
-            if (visited[u] == 1) {  // Nœud déjà en cours = cycle
-                return true;
-            }
-            if (visited[u] == 0 && dfs(u, visited)) {  // Nœud non visité
-                return true;
-            }
-        }
-    }
-    
-    visited[v] = 2;  // Marquer comme complètement visité
-    return false;
-}
-
-std::vector<int> GasNetwork::topologicalSort(const std::unordered_map<int, KC>& kcs) {
-    if (connections.empty()) {
-        std::cout << "Cannot perform topological sort: network is empty!\n";
-        return std::vector<int>();
-    }
-
-    if (hasCycle()) {
-        std::cout << "Cannot perform topological sort: network contains cycles!\n";
-        return std::vector<int>();
-    }
-
-    sortedIds.clear();
-    std::unordered_map<int, int> inDegree;
-    
-    // Initialize in-degree for all KCs
-    for (const auto& pair : kcs) {
-        inDegree[pair.first] = 0;
-    }
-    
-    // Calculate in-degree
-    for (const auto& conn : connections) {
-        inDegree[conn.to_kc]++;
-    }
-    
-    // Find sources (nodes with in-degree 0)
-    std::queue<int> q;
-    for (const auto& pair : kcs) {
-        if (inDegree[pair.first] == 0) {
-            q.push(pair.first);
-        }
-    }
-    
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-        sortedIds.push_back(v);
-        
-        // Pour chaque voisin de v
-        if (adjacencyList.count(v)) {
-            for (int u : adjacencyList[v]) {
-                inDegree[u]--;
-                if (inDegree[u] == 0) {
-                    q.push(u);
-                }
-            }
-        }
-    }
-    
-    return sortedIds;
-}
-
-bool GasNetwork::connectionExists(int from_kc, int to_kc) const {
-    for (const auto& conn : connections) {
-        if (conn.from_kc == from_kc && conn.to_kc == to_kc) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void GasNetwork::displayConnections() const {
-    if (connections.empty()) {
-        std::cout << "No connections in the network.\n";
-        std::cout << "To create a network, you need:\n";
-        std::cout << "1. At least 2 KCs\n";
-        std::cout << "2. At least 1 pipe\n";
-        std::cout << "Use the main menu options 1 and 2 to create these first.\n";
-        return;
-    }
-    std::cout << "\nNetwork Connections:\n";
-    std::cout << "Format: Source -> Destination (Pipe ID)\n";
-    
-    // Grouper par source
-    std::unordered_map<int, std::vector<std::pair<int, int>>> sourceGroups;
-    for (const auto& conn : connections) {
-        sourceGroups[conn.from_kc].push_back({conn.to_kc, conn.pipe_id});
-    }
-    
-    // Afficher chaque source et ses destinations
-    for (const auto& group : sourceGroups) {
-        std::cout << "\nFrom KC " << group.first << ":\n";
-        for (const auto& dest : group.second) {
-            std::cout << "  --> KC " << dest.first 
-                     << " (Pipe ID: " << dest.second << ")\n";
-        }
-    }
-}
-
+/*======================================================================
+   PIPE‑RELATED QUERIES
+======================================================================*/
 bool GasNetwork::isPipeUsed(int pipe_id) const {
-    for (const auto& conn : connections) {
-        if (conn.pipe_id == pipe_id) return true;
-    }
+    for (const auto& kv : graph)
+        for (const Edge& e : kv.second)
+            if (e.pipe_id == pipe_id) return true;
     return false;
 }
-
-void GasNetwork::clear() {
-    connections.clear();
-    adjacencyList.clear();
-    sortedIds.clear();
-}
-
-void GasNetwork::saveToFile(std::ofstream& file) const {
-    file << connections.size() << '\n';
-    for (const auto& conn : connections) {
-        file << conn.from_kc << ' ' << conn.to_kc << ' ' << conn.pipe_id << '\n';
-    }
-}
-
-bool GasNetwork::dfsCheckCycle(int v, std::unordered_map<int, int>& visited) {
-    visited[v] = 1;  // Marquer comme en cours de visite
-    
-    // Vérifier tous les voisins
-    if (adjacencyList.count(v)) {
-        for (int u : adjacencyList[v]) {
-            if (visited[u] == 1) {  // Nœud déjà en cours = cycle
-                return true;
-            }
-            if (visited[u] == 0 && dfsCheckCycle(u, visited)) {  // Nœud non visité
-                return true;
-            }
-        }
-    }
-    
-    visited[v] = 2;  // Marquer comme complètement visité
-    return false;
-}
-
-void GasNetwork::loadFromFile(std::ifstream& file) {
-    clear();
-    size_t count;
-    file >> count;
-    for (size_t i = 0; i < count; ++i) {
-        Connection conn;
-        file >> conn.from_kc >> conn.to_kc >> conn.pipe_id;
-        addConnection(conn.from_kc, conn.to_kc, conn.pipe_id);
-    }
-}
-
-bool GasNetwork::canDeletePipe(int pipe_id) const {
-    return !isPipeUsed(pipe_id);
-}
-
-bool GasNetwork::canDeleteKC(int kc_id) const {
-    for (const auto& conn : connections) {
-        if (conn.from_kc == kc_id || conn.to_kc == kc_id) {
-            return false;
-        }
-    }
-    return true;
-}
-
-void GasNetwork::removeConnection(int pipe_id) {
-    auto new_end = std::remove_if(connections.begin(), connections.end(),
-        [pipe_id](const Connection& conn) { return conn.pipe_id == pipe_id; });
-    connections.erase(new_end, connections.end());
-
-    // Update adjacencyList
-    for (auto it = adjacencyList.begin(); it != adjacencyList.end();) {
-        bool found = false;
-        for (const auto& conn : connections) {
-            if (conn.from_kc == it->first) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            it = adjacencyList.erase(it);
-        } else {
-            ++it;
-        }
-    }
-}
+bool GasNetwork::isPipeInNetwork(int pipe_id) const { return isPipeUsed(pipe_id); }
 
 void GasNetwork::removeConnectionByPipe(int pipe_id) {
-    auto it = std::find_if(connections.begin(), connections.end(),
-        [pipe_id](const Connection& conn) { return conn.pipe_id == pipe_id; });
-    
-    if (it != connections.end()) {
-        int from_kc = it->from_kc;
-        int to_kc = it->to_kc;
-        
-        // Remove from connections vector
-        connections.erase(it);
-        
-        // Update adjacencyList
-        if (adjacencyList.find(from_kc) != adjacencyList.end()) {
-            auto& vec = adjacencyList[from_kc];
-            vec.erase(std::remove(vec.begin(), vec.end(), to_kc), vec.end());
-            if (vec.empty()) {
-                adjacencyList.erase(from_kc);
+    for (auto& kv : graph) {
+        auto& vec = kv.second;
+        vec.erase(std::remove_if(vec.begin(), vec.end(),
+                                 [pipe_id](const Edge& e){ return e.pipe_id == pipe_id; }),
+                  vec.end());
+    }
+}
+
+/*======================================================================
+   KC‑RELATED QUERIES
+======================================================================*/
+bool GasNetwork::canDeleteKC(int kc_id) const {
+    if (graph.find(kc_id) != graph.end()) return false;          // KC source
+    for (const auto& kv : graph)
+        for (const Edge& e : kv.second)
+            if (e.to == kc_id) return false;                    // KC destination
+    return true;
+}
+
+/*======================================================================
+   CYCLE DETECTION (DFS + coloriage)
+======================================================================*/
+bool GasNetwork::hasCycleDFS(int u,
+                             std::unordered_map<int,int>& color,
+                             const std::unordered_map<int,std::vector<Edge>>& g) const {
+    color[u] = 1;                                            // gris
+    auto it = g.find(u);
+    if (it != g.end()) {
+        for (const Edge& e : it->second) {
+            int v = e.to;
+            if (color[v] == 1) return true;                  // back‑edge → cycle
+            if (color[v] == 0 && hasCycleDFS(v, color, g)) return true;
+        }
+    }
+    color[u] = 2;                                            // noir
+    return false;
+}
+
+/* detection de cycle (prend en compte toutes les KC, même celles qui ne sont que destinations) */
+bool GasNetwork::hasCycle() const {
+    std::unordered_map<int,int> color;
+    // on crée un sommet pour chaque KC présent soit en tant que source soit en tant que destination
+    for (const auto& kv : graph) {
+        color[kv.first] = 0;
+        for (const Edge& e : kv.second) color[e.to] = 0;
+    }
+    for (auto& kv : color)
+        if (kv.second == 0 && hasCycleDFS(kv.first, color, graph)) return true;
+    return false;
+}
+
+/*======================================================================
+   EMPTY / DISPLAY
+======================================================================*/
+bool GasNetwork::isEmpty() const { return graph.empty(); }
+
+void GasNetwork::displayConnections() const {
+    std::cout << "\n=== Network Connections ===\n";
+    for (const auto& kv : graph) {
+        int from = kv.first;
+        for (const Edge& e : kv.second)
+            std::cout << "KC " << from << " -> KC " << e.to
+                      << " (Pipe ID: " << e.pipe_id << ")\n";
+    }
+}
+
+/*======================================================================
+   TOPOLOGICAL SORT (Kahn)
+======================================================================*/
+std::vector<int> GasNetwork::topologicalSort(const std::unordered_map<int, KC>& companies) const {
+    std::unordered_map<int,int> indeg;
+    std::unordered_map<int,std::vector<int>> adj;
+
+    for (const auto& kv : companies) {
+        indeg[kv.first] = 0;
+        adj[kv.first] = {};
+    }
+
+    for (const auto& kv : graph) {
+        int from = kv.first;
+        for (const Edge& e : kv.second) {
+            adj[from].push_back(e.to);
+            indeg[e.to]++;                     // comptage indegree
+        }
+    }
+
+    std::queue<int> q;
+    for (const auto& kv : indeg)
+        if (kv.second == 0) q.push(kv.first);
+
+    std::vector<int> order;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (int v : adj[u])
+            if (--indeg[v] == 0) q.push(v);
+    }
+
+    if (order.size() != companies.size()) {
+        std::cout << "Topological sort failed: cycle detected!\n";
+        return {};
+    }
+    return order;
+}
+
+/*======================================================================
+   UPDATE PIPE – après modification de l’état (réparation / opération)
+======================================================================*/
+void GasNetwork::updatePipeInNetwork(int pipe_id, const Pipe& pipe) {
+    for (auto& kv : graph)
+        for (Edge& e : kv.second)
+            if (e.pipe_id == pipe_id) {
+                e.capacity = static_cast<Edge::FlowType>(pipe.getCapacity());
+                e.weight   = pipe.getWeight();
+            }
+}
+
+
+long long GasNetwork::calculateMaxFlow(int source, int sink) const {
+    // --------- 1️⃣  collecte de tous les nœuds ----------
+    std::set<int> nodes{source, sink};
+    for (const auto& kv : graph) {
+        nodes.insert(kv.first);
+        for (const Edge& e : kv.second) nodes.insert(e.to);
+    }
+    if (!nodes.count(source) || !nodes.count(sink)) {
+        std::cout << "Source or sink not present in the network.\n";
+        return 0;
+    }
+
+    // --------- 2️⃣  index ↔ id ----------
+    std::map<int,int> idx;
+    int i = 0;
+    for (int v : nodes) idx[v] = i++;
+
+    int n = nodes.size();
+    std::vector<std::vector<long long>> cap(n,
+        std::vector<long long>(n, 0));
+
+    // --------- 3️⃣  remplissage de la matrice ----------
+    for (const auto& kv : graph) {
+        int u = idx.at(kv.first);
+        for (const Edge& e : kv.second) {
+            int v = idx.at(e.to);
+            cap[u][v] += e.capacity;                 // somme des capacités multiples
+        }
+    }
+
+    int s = idx.at(source);
+    int t = idx.at(sink);
+    long long maxFlow = 0;
+    std::vector<int> parent(n);
+
+    // --------- 4️⃣  boucle principale (BFS) ----------
+    while (true) {
+        std::fill(parent.begin(), parent.end(), -1);
+        parent[s] = -2;                               // source marquée
+
+        std::queue<int> q;
+        q.push(s);
+
+        // BFS : recherche d’un chemin augmentant
+        while (!q.empty() && parent[t] == -1) {
+            int u = q.front(); q.pop();
+            for (int v = 0; v < n; ++v)
+                if (parent[v] == -1 && cap[u][v] > 0) {
+                    parent[v] = u;
+                    q.push(v);
+                }
+        }
+        if (parent[t] == -1) break;                     // plus de chemin
+
+        long long pathFlow = std::numeric_limits<long long>::max();
+        for (int v = t; v != s; v = parent[v])
+            pathFlow = std::min(pathFlow, cap[parent[v]][v]);
+
+        for (int v = t; v != s; v = parent[v]) {
+            int u = parent[v];
+            cap[u][v] -= pathFlow;
+            cap[v][u] += pathFlow;
+        }
+        maxFlow += pathFlow;
+    }
+    return maxFlow;
+}
+
+/*======================================================================
+   SHORTEST PATH – Dijkstra (priority_queue)
+   (marqué const)
+======================================================================*/
+std::vector<int> GasNetwork::findShortestPath(int source, int sink,
+                                    const std::unordered_map<int, Pipe>& /*pipes*/) const {
+    using Weight = float;
+    const Weight INF = std::numeric_limits<Weight>::infinity();
+
+    // --------- distances initiales ----------
+    std::unordered_map<int,Weight> dist;
+    std::unordered_map<int,int>    parent;
+    for (const auto& kv : graph) {
+        dist[kv.first] = INF; parent[kv.first] = -1;
+        for (const Edge& e : kv.second) {
+            dist[e.to] = INF; parent[e.to] = -1;
+        }
+    }
+    if (!dist.count(source) || !dist.count(sink)) {
+        std::cout << "Source or sink not present in the network.\n";
+        return {};
+    }
+    dist[source] = 0.0f;
+
+    // --------- min‑heap ----------
+    using PQItem = std::pair<Weight,int>;               // (dist, node)
+    std::priority_queue<PQItem,
+                        std::vector<PQItem>,
+                        std::greater<PQItem>> pq;
+    pq.emplace(0.0f, source);
+
+    while (!pq.empty()) {
+        auto top = pq.top(); pq.pop();
+        Weight d = top.first;
+        int    u = top.second;
+        if (d != dist[u]) continue;                     // entrée périmée
+        if (u == sink) break;                            // arrivé
+
+        auto it = graph.find(u);
+        if (it == graph.end()) continue;
+        for (const Edge& e : it->second) {
+            if (std::isinf(e.weight)) continue;           // tuyau en réparation
+            int v = e.to;
+            Weight nd = d + e.weight;
+            if (nd < dist[v]) {
+                dist[v]   = nd;
+                parent[v] = u;
+                pq.emplace(nd, v);
             }
         }
     }
-}
 
-void GasNetwork::removeConnectionsWithKC(int kc_id) {
-    auto new_end = std::remove_if(connections.begin(), connections.end(),
-        [kc_id](const Connection& conn) { 
-            return conn.from_kc == kc_id || conn.to_kc == kc_id; 
-        });
-    connections.erase(new_end, connections.end());
-
-    // Remove from adjacencyList
-    adjacencyList.erase(kc_id);
-    
-    // Remove this KC from other KC's adjacency lists
-    for (auto& pair : adjacencyList) {
-        auto& vec = pair.second;
-        auto it = std::remove(vec.begin(), vec.end(), kc_id);
-        vec.erase(it, vec.end());
+    if (dist[sink] == INF) {
+        std::cout << "No path found from " << source << " to " << sink << ".\n";
+        return {};
     }
+
+    // reconstruction du chemin
+    std::vector<int> path;
+    for (int cur = sink; cur != -1; cur = parent[cur])
+        path.push_back(cur);
+    std::reverse(path.begin(), path.end());
+    return path;
 }
 
-bool GasNetwork::isPipeInNetwork(int pipe_id) const {
-    return std::any_of(connections.begin(), connections.end(),
-        [pipe_id](const Connection& conn) { return conn.pipe_id == pipe_id; });
+/*======================================================================
+   DISPLAY FLOW ANALYSIS (max‑flow + shortest path)
+======================================================================*/
+void GasNetwork::displayFlowAnalysis(int source, int sink,
+        const std::unordered_map<int, KC>& companies,
+        const std::unordered_map<int, Pipe>& pipes) const {
+
+    std::cout << "\n=== Flow Analysis from KC " << source
+              << " to KC " << sink << " ===\n";
+
+    if (companies.find(source) != companies.end())
+        std::cout << "Source: KC " << source << " (" << companies.at(source).getName() << ")\n";
+    if (companies.find(sink) != companies.end())
+        std::cout << "Sink:   KC " << sink   << " (" << companies.at(sink).getName()   << ")\n";
+
+    if (source == sink) {
+        std::cout << "Source and sink are identical – nothing to analyse.\n";
+        return;
+    }
+
+    // -------------------- MAX‑FLOW --------------------
+    long long maxFlow = calculateMaxFlow(source, sink);
+    std::cout << "\n--- Maximum Flow ---\n";
+    std::cout << "Maximum flow from KC " << source << " to KC " << sink
+              << " : " << maxFlow << " m³/h\n";
+
+    // -------------------- SHORTEST PATH --------------------
+    std::vector<int> shortestPath = findShortestPath(source, sink, pipes);
+    if (shortestPath.empty()) {
+        std::cout << "\n--- Shortest Path ---\n";
+        std::cout << "No path found from KC " << source << " to KC " << sink << ".\n";
+        return;
+    }
+
+    std::cout << "\n--- Shortest Path (by distance) ---\n";
+    float totalDist = 0.0f;
+    using FlowType = Edge::FlowType;
+    FlowType bottleneck = std::numeric_limits<FlowType>::max();
+
+    for (size_t i = 0; i < shortestPath.size(); ++i) {
+        int kc = shortestPath[i];
+        if (companies.find(kc) != companies.end())
+            std::cout << "  [" << i << "] KC " << kc << " ("
+                      << companies.at(kc).getName() << ")";
+        else
+            std::cout << "  [" << i << "] KC " << kc;
+
+        if (i + 1 < shortestPath.size()) {
+            int nxt = shortestPath[i + 1];
+            const Edge* eptr = nullptr;
+            auto it = graph.find(kc);
+            if (it != graph.end())
+                for (const Edge& e : it->second)
+                    if (e.to == nxt) { eptr = &e; break; }
+
+            if (eptr) {
+                const Pipe& p = pipes.at(eptr->pipe_id);
+                totalDist += p.getLength();
+                bottleneck = std::min(bottleneck,
+                                     static_cast<FlowType>(p.getCapacity()));
+                std::cout << "\n        --[Pipe ID:" << p.getId()
+                          << " Name:" << p.getName()
+                          << " Len:" << (int)p.getLength()
+                          << "m Cap:" << p.getCapacity()
+                          << " m^3/h]--> ";
+            }
+        }
+        std::cout << "\n";
+    }
+
+    std::cout << "\nPath statistics:\n";
+    std::cout << "  Total distance               : " << totalDist << " m\n";
+    if (bottleneck == std::numeric_limits<FlowType>::max())
+        std::cout << "  Path capacity (bottleneck)   : undefined (no pipe traversed)\n";
+    else
+        std::cout << "  Path capacity (bottleneck)   : " << bottleneck << " m^3/h\n";
+    std::cout << "  Number of hops (edges)       : " << (shortestPath.size() - 1) << "\n";
 }

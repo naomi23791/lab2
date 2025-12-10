@@ -2,43 +2,76 @@
 #include <unordered_map>
 #include <vector>
 #include <queue>
+#include <limits>
 #include "Pipe.h"
 #include "KC.h"
 
-struct Connection {
-    int from_kc;
-    int to_kc;
-    int pipe_id;
-};
-
 class GasNetwork {
+public:
+    /* -------------------------------------------------------------
+       Edge – rendu public afin d’être visible depuis le code client
+       ------------------------------------------------------------- */
+    struct Edge {
+        int   to;                // KC destination
+        int   pipe_id;           // identifiant du tuyau utilisé
+        using FlowType = long long;          // capacité très grande (public)
+        FlowType capacity;       // 0 si le tuyau est en réparation
+        FlowType flow;           // (non utilisé dans l’algorithme)
+        float weight;            // longueur du tuyau ou +inf si en réparation
+    };
+
 private:
-    std::vector<Connection> connections;
-    std::unordered_map<int, std::vector<int>> adjacencyList;
-    std::vector<bool> used;
-    std::vector<int> sortedIds;
+    /* -------------------------------------------------------------
+       Données internes (toujours privées)
+       ------------------------------------------------------------- */
+    std::unordered_map<int, std::vector<Edge>> graph;   // graphe orienté
+    std::unordered_map<int, Pipe>                pipes;   // toutes les tuyaux connus
+
+    /* -------------------------------------------------------------
+       Fonction auxiliaire de détection de cycles (DFS)
+       ------------------------------------------------------------- */
+    bool hasCycleDFS(int u,
+                    std::unordered_map<int,int>& color,
+                    const std::unordered_map<int,std::vector<Edge>>& g) const;
 
 public:
-    bool addConnection(int from_kc, int to_kc, int pipe_id);
-    bool hasCycle();
-    std::vector<int> topologicalSort(const std::unordered_map<int, KC>& kcs);
-    void displayConnections() const;
-    bool isPipeUsed(int pipe_id) const;
-    void clear();
-    void saveToFile(std::ofstream& file) const;
-    void loadFromFile(std::ifstream& file);
-    bool connectionExists(int from_kc, int to_kc) const;
-    bool isEmpty() const { return connections.empty(); }
-    bool canDeleteKC(int kc_id) const;
-    bool canDeletePipe(int pipe_id) const;
-    void removeConnection(int pipe_id);
-    void removeConnectionByPipe(int pipe_id);
-    void removeConnectionsWithKC(int kc_id);
-    bool isPipeInNetwork(int pipe_id) const;
+    GasNetwork();
 
-private:
-    bool dfs(int v, std::unordered_map<int, int>& visited);
-    bool dfsCheckCycle(int v, std::unordered_map<int, int>& visited);
-    bool hasCycleUtil(int v, std::unordered_map<int, bool>& visited,std::unordered_map<int, bool>& recursionStack);
-    
+    /* -----------------------------------------------------------------
+       Opérations de base
+       ----------------------------------------------------------------- */
+    bool addConnection(int from, int to, int pipe_id);   // crée une arête
+    bool connectionExists(int from, int to) const;
+    bool isPipeUsed(int pipe_id) const;
+    bool isPipeInNetwork(int pipe_id) const;
+    void removeConnectionByPipe(int pipe_id);
+    bool canDeleteKC(int kc_id) const;
+    bool hasCycle() const;
+    bool isEmpty() const;
+    void displayConnections() const;
+    std::vector<int> topologicalSort(const std::unordered_map<int, KC>& companies) const;
+
+    /* -----------------------------------------------------------------
+       Accesseurs publics supplémentaires
+       ----------------------------------------------------------------- */
+    // Accès en lecture au graphe (necessaire pour les affichages externes)
+    const std::unordered_map<int, std::vector<Edge>>& getGraph() const { return graph; }
+
+    // Enregistrement d’un tuyau dès sa création (appelé depuis le menu principal)
+    void registerPipe(int pipe_id, const Pipe& pipe);
+
+    // Mise à jour d’un tuyau déjà présent dans le réseau (ex. changement de répar.)
+    void updatePipeInNetwork(int pipe_id, const Pipe& pipe);
+
+    // Calcul du débit maximal (const – ne modifie rien)
+    long long calculateMaxFlow(int source, int sink) const;
+
+    // Recherche du plus court chemin (Dijkstra – const)
+    std::vector<int> findShortestPath(int source, int sink,
+                                      const std::unordered_map<int, Pipe>& pipes) const;
+
+    // Affichage complet (max‑flow + shortest path) – const
+    void displayFlowAnalysis(int source, int sink,
+                             const std::unordered_map<int, KC>& companies,
+                             const std::unordered_map<int, Pipe>& pipes) const;
 };

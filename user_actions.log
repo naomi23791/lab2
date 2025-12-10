@@ -1379,3 +1379,546 @@ pipe7
 56
 700
 no
+action1for the companies
+com1
+34
+23
+a
+action2for the companies
+com2
+34
+5
+b
+action1for the pipes
+pipe1
+34
+500
+no
+[2025-11-12 00:50:45] Exited program
+action1for the companies
+com1
+23
+2
+a
+Added company
+action2for the companies
+com2
+56
+34
+b
+Added company
+action1for the pipes
+pipe1
+34
+500
+no
+Added pipe
+action2for the pipes
+pipe2
+23
+500
+no
+Added pipe
+Exited program
+action1for the companies
+com1
+34
+23
+a
+action2for the companies
+com2
+67
+34
+b
+action3for the companies
+com3
+45
+23
+b
+Added company
+action1for the pipes
+pipe1
+23
+500
+no
+Added pipe
+action2for the pipes
+pipe2
+34
+500
+no
+Added pipe
+action3for the pipes
+pipe3
+45
+700
+no
+Added pipe
+Added connection: KC1 -> KC2 using pipe 1
+Added connection: KC1 -> KC3 using pipe 2
+Added connection: KC2 -> KC3 using pipe 3
+Exited program
+[2025-11-12 13:13:52] Exited program
+[2025-11-12 13:20:37] Exited program
+action1for the companies
+com1
+34
+23
+a
+[2025-11-18 18:45:41] User created company before network setup
+action2for the companies
+com2
+56
+34
+b
+action1for the pipes
+pipe1
+500
+500
+no
+[2025-11-18 18:46:11] User created pipe before network setup
+[2025-11-18 18:47:45] Added connection: KC2 -> KC3 using pipe 2
+action1for the companies
+com1
+34
+23
+a
+[2025-11-19 13:04:44] User created company before network setup
+action2for the companies
+com2
+56
+34
+b
+action1for the pipes
+pipe1
+467
+500
+no
+[2025-11-19 13:05:15] User created pipe before network setup
+[2025-11-19 13:05:46] Added connection: KC2 -> KC3 using pipe 2
+action1for the companies
+com1
+23
+1
+a
+[2025-11-19 13:10:01] User created company before network setup
+action2for the companies
+com2
+34
+23
+b
+action1for the pipes
+pipe1
+34
+500
+no
+[2025-11-19 13:10:22] User created pipe before network setup
+[2025-11-19 13:10:30] Added connection: KC1 -> KC2 using pipe 1
+action1for the companies
+com1
+34
+23
+a
+[2025-11-19 13:18:05] User created company before network setup
+action2for the companies
+com2
+67
+45
+b
+action1for the pipes
+pipe1
+34
+500
+no
+[2025-11-19 13:18:23] User created pipe before network setup
+[2025-11-19 13:18:29] Added connection: KC1 -> KC2 using pipe 1
+action2for the pipes
+pipe2
+34
+500
+no
+[2025-11-19 13:18:50] User created pipe before selecting diameter for connection
+action3for the companies
+com3
+23
+12
+b
+[2025-11-19 13:19:17] Added company
+action1for the companies
+com1
+45
+34
+a
+[2025-11-19 13:32:09] User created company before network setup
+action2for the companies
+com2
+34
+23
+b
+action1for the pipes
+pipe1
+56
+500
+no
+[2025-11-19 13:32:41] User created pipe before network setup
+[2025-11-19 13:33:07] Added connection: KC1 -> KC2 using pipe 1
+action1for the companies
+com1
+23
+1
+a
+[2025-12-09 19:39:32] User created company before network setup
+action2for the companies
+com2
+456
+34
+b
+action1for the pipes
+pipe1
+500
+500
+no
+[2025-12-09 19:40:43] User created pipe before network setup
+[2025-12-09 19:41:22] Added connection: KC1 -> KC2 using pipe 1
+action2for the pipes
+500
+500
+500
+no
+[2025-12-09 19:42:05] Added pipe
+action3for the pipes
+pipe3
+345
+500
+no
+[2025-12-09 19:42:28] Added pipe
+action4for the pipes
+pipe4
+890
+1400
+no
+[2025-12-09 19:42:49] Added pipe
+action5for the pipes
+pipe5
+789
+500
+no
+[2025-12-09 19:43:04] Added pipe
+action3for the companies
+com3
+345
+65
+a
+[2025-12-09 19:43:20] Added company
+action4for the companies
+com4
+78
+5
+b
+[2025-12-09 19:43:35] Added company
+action5for the companies
+com5
+67
+9
+c
+[2025-12-09 19:43:55] Added company
+[2025-12-09 19:44:38] Added connection: KC1 -> KC3 using pipe 4
+[2025-12-09 19:45:12] Added connection: KC2 -> KC4 using pipe 2
+[2025-12-09 19:45:26] Added connection: KC4 -> KC5 using pipe 3
+[2025-12-09 19:45:36] Added connection: KC3 -> KC5 using pipe 5
+action1 for the pipes
+pipe1
+546
+500
+no
+[2025-12-09 20:55:23] Added pipe
+action2 for the pipes
+pipe2
+789
+500
+no
+[2025-12-09 20:55:36] Added pipe
+action3 for the pipes
+pipe3
+4564
+500
+no
+[2025-12-09 20:55:54] Added pipe
+action4 for the pipes
+pipe4
+6478
+500
+no
+[2025-12-09 20:56:11] Added pipe
+action5 for the pipes
+pipe5
+785
+1400
+no
+[2025-12-09 20:56:29] Added pipe
+action1 for the companies
+com1
+657
+34
+a
+[2025-12-09 20:56:44] Added company
+action2 for the companies
+com2
+759
+45
+b
+[2025-12-09 20:56:53] Added company
+action3 for the companies
+com3
+768
+56
+c
+[2025-12-09 20:57:03] Added company
+action4 for the companies
+com4
+556
+456
+d
+[2025-12-09 20:57:20] Added company
+action5 for the companies
+com5
+547
+34
+b
+[2025-12-09 20:57:35] Added company
+action1 for the pipes
+pipe1
+789
+500
+no
+[2025-12-09 21:17:49] Added pipe
+action2 for the pipes
+pipe2
+890
+500
+no
+[2025-12-09 21:18:09] Added pipe
+action3 for the pipes
+pipe3
+789
+500
+no
+[2025-12-09 21:18:38] Added pipe
+action4 for the pipes
+pipe4
+45578
+500
+no
+[2025-12-09 21:18:57] Added pipe
+action5 for the pipes
+pipe5
+457
+1400
+no
+[2025-12-09 21:19:13] Added pipe
+action1 for the companies
+com1
+34
+23
+a
+[2025-12-09 21:19:25] Added company
+action2 for the companies
+com2
+675
+68
+b
+[2025-12-09 21:19:35] Added company
+action3 for the companies
+com3
+78
+67
+d
+[2025-12-09 21:19:50] Added company
+action4 for the companies
+com4
+7854
+89
+d
+[2025-12-09 21:20:08] Added company
+action5 for the companies
+com5
+789
+90
+a
+[2025-12-09 21:20:27] Added company
+[2025-12-09 21:20:49] Added connection: KC1 -> KC2 using pipe 1
+[2025-12-09 21:21:05] Added connection: KC1 -> KC3 using pipe 5
+[2025-12-09 21:21:30] Added connection: KC2 -> KC4 using pipe 2
+[2025-12-09 21:21:37] Added connection: KC4 -> KC5 using pipe 3
+[2025-12-09 21:21:45] Added connection: KC3 -> KC5 using pipe 4
+action1 for the pipes
+pipe1
+678
+500
+no
+[2025-12-09 21:39:44] Added pipe
+action2 for the pipes
+pipe2
+345
+500
+no
+[2025-12-09 21:39:59] Added pipe
+action3 for the pipes
+pipe3
+675
+500
+no
+[2025-12-09 21:45:47] Added pipe
+action4 for the pipes
+pipe4
+789
+500
+no
+[2025-12-09 21:46:08] Added pipe
+action5 for the pipes
+pipe5
+5467
+1400
+no
+[2025-12-09 21:46:29] Added pipe
+action1 for the companies
+com1
+345
+34
+a
+[2025-12-09 21:46:39] Added company
+action2 for the companies
+com2
+456
+78
+b
+[2025-12-09 21:46:49] Added company
+action3 for the companies
+com3
+456
+34
+b
+[2025-12-09 21:47:06] Added company
+action4 for the companies
+com4
+5674
+234
+d
+[2025-12-09 21:47:36] Added company
+action5 for the companies
+com5
+345
+56
+a
+[2025-12-09 21:48:09] Added company
+[2025-12-09 21:48:21] Added connection: KC1 -> KC2 using pipe 1
+[2025-12-09 21:48:31] Added connection: KC1 -> KC3 using pipe 5
+[2025-12-09 21:48:46] Added connection: KC2 -> KC4 using pipe 2
+[2025-12-09 21:48:58] Added connection: KC4 -> KC5 using pipe 3
+[2025-12-09 21:49:12] Added connection: KC3 -> KC5 using pipe 4
+action1 for the pipes
+pipe1
+345
+500
+no
+[2025-12-09 22:17:34] Added pipe
+action2 for the pipes
+pipe2
+5467
+500
+no
+[2025-12-09 22:17:48] Added pipe
+action3 for the pipes
+pipe3
+345
+500
+no
+[2025-12-09 22:18:19] Added pipe
+action4 for the pipes
+pipe4
+3546
+500
+no
+[2025-12-09 22:18:45] Added pipe
+action5 for the pipes
+pipe5
+4567
+1400
+no
+[2025-12-09 22:19:01] Added pipe
+action1 for the companies
+com1
+789
+567
+a
+[2025-12-09 22:19:11] Added company
+action2 for the companies
+com2
+234
+89
+c
+[2025-12-09 22:19:25] Added company
+action3 for the companies
+com3
+456
+345
+b
+[2025-12-09 22:19:35] Added company
+action4 for the companies
+com4
+67587
+3456
+s
+[2025-12-09 22:19:50] Added company
+action1 for the pipes
+pipe1
+3534
+500
+no
+[2025-12-09 22:30:57] Added pipe
+action2 for the pipes
+pipe2
+3456
+500
+no
+[2025-12-09 22:31:10] Added pipe
+action3 for the pipes
+pipe3
+897
+500
+no
+[2025-12-09 22:31:24] Added pipe
+action4 for the pipes
+pipe4
+65874
+1400
+no
+[2025-12-09 22:31:41] Added pipe
+action1 for the companies
+com1
+345
+23
+a
+[2025-12-09 22:31:56] Added company
+action2 for the companies
+com2
+89
+34
+b
+[2025-12-09 22:32:13] Added company
+action3 for the companies
+com3
+90
+34
+d
+[2025-12-09 22:32:24] Added company
+action4 for the companies
+com4
+789
+456
+d
+[2025-12-09 22:32:36] Added company
+[2025-12-09 22:32:49] Added connection: KC1 -> KC2 using pipe 3
+[2025-12-09 22:33:02] Added connection: KC2 -> KC3 using pipe 2
+[2025-12-09 22:33:25] Added connection: KC3 -> KC4 using pipe 1
+[2025-12-09 22:33:33] Added connection: KC1 -> KC4 using pipe 4
